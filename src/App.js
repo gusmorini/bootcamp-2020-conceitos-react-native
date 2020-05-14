@@ -33,16 +33,16 @@ export default function App() {
   // adiciona um like ao repositório
   async function handleLikeRepository(id) {
     const response = await api.post(`repositories/${id}/like`);
+
     // se não houve erro o status é 200
     if (response.status === 200) {
-      // cria uma cópia do array atual no state
-      const temp_array = repositories.slice();
-      // encontra o index referente dentro do array
-      const index = temp_array.findIndex((item) => item.id === id);
-      // altera o valor de likes para o novo valor
-      temp_array[index].likes = response.data.likes;
-      // seta o novo valor no array do state
-      setRepositories(temp_array);
+      // cria um array temporário que compara e adiciona as novas informações pelo map
+      const temp_repositories = repositories.map((rep) =>
+        // se o rep.id === id retorna o response.data se não o rep sem modificações
+        rep.id === id ? response.data : rep
+      );
+      // seta o novo valor no state
+      setRepositories(temp_repositories);
     }
   }
 
@@ -58,8 +58,8 @@ export default function App() {
               <Text style={styles.repository}>{item.title}</Text>
 
               <View style={styles.techsContainer}>
-                {item.techs.map((tech, index) => (
-                  <Text key={index} style={styles.tech}>
+                {item.techs.map((tech) => (
+                  <Text key={tech} style={styles.tech}>
                     {tech}
                   </Text>
                 ))}
